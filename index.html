@@ -1,1 +1,233 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banco OroSur</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172033;
+    }
+    header {
+      background: #073b35;
+      color: white;
+      padding: 24px;
+    }
+    header h1 { margin: 0 0 8px; }
+    nav {
+      background: #fff;
+      padding: 14px 24px;
+      border-bottom: 1px solid #ddd;
+    }
+    main {
+      max-width: 1050px;
+      margin: 28px auto;
+      padding: 0 18px;
+    }
+    .resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .tarjeta, .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px #0000000a;
+      margin-bottom: 20px;
+    }
+    .tarjeta p { color: #64748b; margin-bottom: 6px; }
+    .tarjeta strong { font-size: 25px; }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    label { display: block; font-weight: bold; font-size: 14px; }
+    input, select {
+      width: 100%;
+      padding: 11px;
+      margin-top: 7px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .guardar { background: #087f5b; color: white; }
+    .eliminar { background: #fee2e2; color: #991b1b; }
+    .tabla { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th { background: #f8fafc; }
+    .aviso { color: #64748b; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏦 BANCO OROSUR</h1>
+    <div>Banca digital · Sistema de demostración</div>
+  </header>
+  <nav>Panel principal / Clientes / Cuentas ficticias</nav>
+  <main>
+    <div class="resumen">
+      <div class="tarjeta">
+        <p>Clientes registrados</p>
+        <strong id="total">0</strong>
+      </div>
+      <div class="tarjeta">
+        <p>Cuentas registradas</p>
+        <strong id="cuentas">0</strong>
+      </div>
+      <div class="tarjeta">
+        <p>Tipo de sistema</p>
+        <strong style="font-size:18px">Demo</strong>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h2>Registrar nuevo cliente</h2>
+      <form id="formulario">
+        <label>Nombres
+          <input id="nombre" required placeholder="Ej. Juan Carlos">
+        </label>
+        <label>Apellidos
+          <input id="apellido" required placeholder="Ej. Pérez López">
+        </label>
+        <label>Identificación ficticia
+          <input id="identificacion" required placeholder="Ej. DEMO-001">
+        </label>
+        <label>Correo electrónico ficticio
+          <input id="correo" type="email" required placeholder="juan@example.com">
+        </label>
+        <label>Tipo de cuenta
+          <select id="tipo">
+            <option>Ahorros</option>
+            <option>Corriente</option>
+          </select>
+        </label>
+        <label>Saldo de demostración ($)
+          <input id="saldo" type="number" min="0" step="0.01" value="0" required>
+        </label>
+        <div>
+          <button class="guardar" type="submit">Registrar cliente</button>
+        </div>
+      </form>
+      <p class="aviso">Utiliza exclusivamente información inventada. Esta demostración no realiza operaciones bancarias reales.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Clientes del Banco OroSur</h2>
+      <div class="tabla">
+        <table>
+          <thead>
+            <tr>
+              <th>N.º</th><th>Cliente</th><th>ID ficticia</th>
+              <th>Tipo de cuenta</th><th>Saldo demo</th><th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+      <p id="vacio">Todavía no hay clientes registrados.</p>
+    </section>
+  </main>
+
+  <script>
+    const CLAVE = "orosur_clientes_demo";
+    let clientes = [];
+    try {
+      clientes = JSON.parse(localStorage.getItem(CLAVE) || "[]");
+      if (!Array.isArray(clientes)) clientes = [];
+    } catch (e) {
+      clientes = [];
+    }
+
+    const dinero = n => "$" + Number(n).toFixed(2);
+
+    function mostrar() {
+      const lista = document.getElementById("lista");
+      lista.replaceChildren();
+
+      clientes.forEach((c, i) => {
+        const fila = document.createElement("tr");
+        [String(i + 1), c.nombre + " " + c.apellido,
+         c.identificacion, c.tipo, dinero(c.saldo)].forEach(valor => {
+          const celda = document.createElement("td");
+          celda.textContent = valor;
+          fila.appendChild(celda);
+        });
+
+        const celda = document.createElement("td");
+        const boton = document.createElement("button");
+        boton.textContent = "Eliminar";
+        boton.className = "eliminar";
+        boton.type = "button";
+        boton.onclick = () => {
+          if (confirm("¿Eliminar este cliente ficticio?")) {
+            clientes.splice(i, 1);
+            guardar();
+          }
+        };
+        celda.appendChild(boton);
+        fila.appendChild(celda);
+        lista.appendChild(fila);
+      });
+
+      document.getElementById("total").textContent = clientes.length;
+      document.getElementById("cuentas").textContent = clientes.length;
+      document.getElementById("vacio").hidden = clientes.length > 0;
+    }
+
+    function guardar() {
+      try {
+        localStorage.setItem(CLAVE, JSON.stringify(clientes));
+        mostrar();
+      } catch (e) {
+        alert("No se pudo guardar en este navegador.");
+      }
+    }
+
+    document.getElementById("formulario").addEventListener("submit", e => {
+      e.preventDefault();
+      const identificacion = document.getElementById("identificacion").value.trim();
+
+      if (clientes.some(c => c.identificacion === identificacion)) {
+        alert("Esa identificación ficticia ya existe.");
+        return;
+      }
+
+      clientes.push({
+        nombre: document.getElementById("nombre").value.trim(),
+        apellido: document.getElementById("apellido").value.trim(),
+        identificacion,
+        correo: document.getElementById("correo").value.trim(),
+        tipo: document.getElementById("tipo").value,
+        saldo: Number(document.getElementById("saldo").value)
+      });
+
+      guardar();
+      e.target.reset();
+      document.getElementById("saldo").value = "0";
+      alert("Cliente ficticio registrado correctamente.");
+    });
+
+    mostrar();
+  </script>
+</body>
+</html>
+
