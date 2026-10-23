@@ -7,227 +7,234 @@
   <title>Banco OroSur</title>
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #172033;
-    }
-    header {
-      background: #073b35;
-      color: white;
-      padding: 24px;
-    }
-    header h1 { margin: 0 0 8px; }
-    nav {
-      background: #fff;
-      padding: 14px 24px;
-      border-bottom: 1px solid #ddd;
-    }
-    main {
-      max-width: 1050px;
-      margin: 28px auto;
-      padding: 0 18px;
-    }
-    .resumen {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-    }
-    .tarjeta, .panel {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px #0000000a;
-      margin-bottom: 20px;
-    }
-    .tarjeta p { color: #64748b; margin-bottom: 6px; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f1f5f9; color: #172033; }
+    header { background: #073b35; color: white; padding: 24px; }
+    nav { background: white; padding: 14px 24px; border-bottom: 1px solid #ddd; }
+    main { max-width: 1050px; margin: 28px auto; padding: 0 18px; }
+    .resumen { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; }
+    .tarjeta,.panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px #0000000a; margin-bottom: 20px; }
+    .tarjeta p { color: #64748b; }
     .tarjeta strong { font-size: 25px; }
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 14px;
-    }
+    form { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 14px; }
     label { display: block; font-weight: bold; font-size: 14px; }
-    input, select {
-      width: 100%;
-      padding: 11px;
-      margin-top: 7px;
-      border: 1px solid #cbd5e1;
-      border-radius: 7px;
-      font-size: 15px;
-    }
-    button {
-      border: 0;
-      border-radius: 7px;
-      padding: 12px 18px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+    input,select { width: 100%; padding: 11px; margin-top: 7px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 15px; }
+    button { border: 0; border-radius: 7px; padding: 12px 18px; cursor: pointer; font-weight: bold; }
     .guardar { background: #087f5b; color: white; }
     .eliminar { background: #fee2e2; color: #991b1b; }
     .tabla { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 650px; }
-    th, td {
-      text-align: left;
-      padding: 12px;
-      border-bottom: 1px solid #e2e8f0;
-    }
+    th,td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; }
     th { background: #f8fafc; }
     .aviso { color: #64748b; font-size: 13px; }
+    #sistema[hidden], #acceso[hidden] { display: none; }
+    .error { color: #b91c1c; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🏦 BANCO OROSUR</h1>
-    <div>Banca digital · Sistema de demostración</div>
-  </header>
-  <nav>Panel principal / Clientes / Cuentas ficticias</nav>
-  <main>
-    <div class="resumen">
-      <div class="tarjeta">
-        <p>Clientes registrados</p>
-        <strong id="total">0</strong>
-      </div>
-      <div class="tarjeta">
-        <p>Cuentas registradas</p>
-        <strong id="cuentas">0</strong>
-      </div>
-      <div class="tarjeta">
-        <p>Tipo de sistema</p>
-        <strong style="font-size:18px">Demo</strong>
-      </div>
-    </div>
+<header>
+  <h1>🏦 BANCO OROSUR</h1>
+  <div>Banca digital · Sistema de demostración</div>
+</header>
+<nav>Panel principal / Clientes / Cuentas ficticias</nav>
+<main>
+  <section id="acceso" class="panel">
+    <h2>Iniciar sesión</h2>
+    <form id="formAcceso">
+      <label>Correo electrónico
+        <input id="emailLogin" type="email" required autocomplete="username">
+      </label>
+      <label>Contraseña
+        <input id="passwordLogin" type="password" required autocomplete="current-password">
+      </label>
+      <div><button class="guardar" type="submit">Entrar</button></div>
+    </form>
+    <p id="mensajeAcceso" role="status"></p>
+  </section>
 
+  <section id="sistema" hidden>
+    <p>Sesión iniciada: <strong id="usuarioActual"></strong>
+      <button id="salir" type="button">Cerrar sesión</button>
+    </p>
+    <div class="resumen">
+      <div class="tarjeta"><p>Clientes registrados</p><strong id="total">0</strong></div>
+      <div class="tarjeta"><p>Cuentas registradas</p><strong id="cuentas">0</strong></div>
+      <div class="tarjeta"><p>Tipo de sistema</p><strong style="font-size:18px">Demo</strong></div>
+    </div>
     <section class="panel">
       <h2>Registrar nuevo cliente</h2>
       <form id="formulario">
-        <label>Nombres
-          <input id="nombre" required placeholder="Ej. Juan Carlos">
-        </label>
-        <label>Apellidos
-          <input id="apellido" required placeholder="Ej. Pérez López">
-        </label>
-        <label>Identificación ficticia
-          <input id="identificacion" required placeholder="Ej. DEMO-001">
-        </label>
-        <label>Correo electrónico ficticio
-          <input id="correo" type="email" required placeholder="juan@example.com">
-        </label>
-        <label>Tipo de cuenta
-          <select id="tipo">
-            <option>Ahorros</option>
-            <option>Corriente</option>
-          </select>
-        </label>
-        <label>Saldo de demostración ($)
-          <input id="saldo" type="number" min="0" step="0.01" value="0" required>
-        </label>
-        <div>
-          <button class="guardar" type="submit">Registrar cliente</button>
-        </div>
+        <label>Nombres<input id="nombre" required maxlength="80" placeholder="Ej. Juan Carlos"></label>
+        <label>Apellidos<input id="apellido" required maxlength="80" placeholder="Ej. Pérez López"></label>
+        <label>Identificación ficticia<input id="identificacion" required maxlength="30" placeholder="Ej. DEMO-001"></label>
+        <label>Correo ficticio<input id="correo" type="email" required maxlength="120" placeholder="juan@example.com"></label>
+        <label>Tipo de cuenta<select id="tipo"><option>Ahorros</option><option>Corriente</option></select></label>
+        <label>Saldo de demostración ($)<input id="saldo" type="number" min="0" max="1000000" step="0.01" value="0" required></label>
+        <div><button class="guardar" type="submit">Registrar cliente</button></div>
       </form>
-      <p class="aviso">Utiliza exclusivamente información inventada. Esta demostración no realiza operaciones bancarias reales.</p>
+      <p class="aviso">Usa exclusivamente datos inventados. Esta demostración no realiza operaciones bancarias reales.</p>
+      <p id="mensajeRegistro" role="status"></p>
     </section>
-
     <section class="panel">
       <h2>Clientes del Banco OroSur</h2>
       <div class="tabla">
         <table>
-          <thead>
-            <tr>
-              <th>N.º</th><th>Cliente</th><th>ID ficticia</th>
-              <th>Tipo de cuenta</th><th>Saldo demo</th><th>Acción</th>
-            </tr>
-          </thead>
+          <thead><tr><th>N.º</th><th>Cliente</th><th>ID ficticia</th><th>Tipo de cuenta</th><th>Saldo demo</th><th>Acción</th></tr></thead>
           <tbody id="lista"></tbody>
         </table>
       </div>
       <p id="vacio">Todavía no hay clientes registrados.</p>
     </section>
-  </main>
+  </section>
+</main>
 
-  <script>
-    const CLAVE = "orosur_clientes_demo";
-    let clientes = [];
-    try {
-      clientes = JSON.parse(localStorage.getItem(CLAVE) || "[]");
-      if (!Array.isArray(clientes)) clientes = [];
-    } catch (e) {
-      clientes = [];
-    }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+  } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot,
+    query, orderBy
+  } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-    const dinero = n => "$" + Number(n).toFixed(2);
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrCJh0NUUtsNU2zdrtFosjqxv6ccL8xrk",
+    authDomain: "banco-orosur.firebaseapp.com",
+    projectId: "banco-orosur",
+    storageBucket: "banco-orosur.firebasestorage.app",
+    messagingSenderId: "961791381376",
+    appId: "1:961791381376:web:9eaaa985f4d54d6b4ebb65"
+  };
 
-    function mostrar() {
-      const lista = document.getElementById("lista");
-      lista.replaceChildren();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const acceso = document.getElementById("acceso");
+  const sistema = document.getElementById("sistema");
+  const mensajeAcceso = document.getElementById("mensajeAcceso");
+  const mensajeRegistro = document.getElementById("mensajeRegistro");
+  const formulario = document.getElementById("formulario");
+  let detenerEscucha = null;
+  let clientes = [];
 
-      clientes.forEach((c, i) => {
-        const fila = document.createElement("tr");
-        [String(i + 1), c.nombre + " " + c.apellido,
-         c.identificacion, c.tipo, dinero(c.saldo)].forEach(valor => {
-          const celda = document.createElement("td");
-          celda.textContent = valor;
-          fila.appendChild(celda);
-        });
+  const dinero = n => "$" + Number(n).toFixed(2);
 
+  function mostrar() {
+    const lista = document.getElementById("lista");
+    lista.replaceChildren();
+
+    clientes.forEach((c, i) => {
+      const fila = document.createElement("tr");
+      [String(i + 1), c.nombre + " " + c.apellido, c.identificacion,
+       c.tipo, dinero(c.saldo)].forEach(valor => {
         const celda = document.createElement("td");
-        const boton = document.createElement("button");
-        boton.textContent = "Eliminar";
-        boton.className = "eliminar";
-        boton.type = "button";
-        boton.onclick = () => {
-          if (confirm("¿Eliminar este cliente ficticio?")) {
-            clientes.splice(i, 1);
-            guardar();
-          }
-        };
-        celda.appendChild(boton);
+        celda.textContent = valor;
         fila.appendChild(celda);
-        lista.appendChild(fila);
       });
 
-      document.getElementById("total").textContent = clientes.length;
-      document.getElementById("cuentas").textContent = clientes.length;
-      document.getElementById("vacio").hidden = clientes.length > 0;
-    }
-
-    function guardar() {
-      try {
-        localStorage.setItem(CLAVE, JSON.stringify(clientes));
-        mostrar();
-      } catch (e) {
-        alert("No se pudo guardar en este navegador.");
-      }
-    }
-
-    document.getElementById("formulario").addEventListener("submit", e => {
-      e.preventDefault();
-      const identificacion = document.getElementById("identificacion").value.trim();
-
-      if (clientes.some(c => c.identificacion === identificacion)) {
-        alert("Esa identificación ficticia ya existe.");
-        return;
-      }
-
-      clientes.push({
-        nombre: document.getElementById("nombre").value.trim(),
-        apellido: document.getElementById("apellido").value.trim(),
-        identificacion,
-        correo: document.getElementById("correo").value.trim(),
-        tipo: document.getElementById("tipo").value,
-        saldo: Number(document.getElementById("saldo").value)
+      const celda = document.createElement("td");
+      const boton = document.createElement("button");
+      boton.textContent = "Eliminar";
+      boton.className = "eliminar";
+      boton.type = "button";
+      boton.addEventListener("click", async () => {
+        if (!confirm("¿Eliminar este cliente ficticio?")) return;
+        try {
+          await deleteDoc(doc(db, "clientes", c.id));
+        } catch (error) {
+          alert("No se pudo eliminar. Revisa los permisos de Firebase.");
+          console.error(error);
+        }
       });
-
-      guardar();
-      e.target.reset();
-      document.getElementById("saldo").value = "0";
-      alert("Cliente ficticio registrado correctamente.");
+      celda.appendChild(boton);
+      fila.appendChild(celda);
+      lista.appendChild(fila);
     });
 
+    document.getElementById("total").textContent = clientes.length;
+    document.getElementById("cuentas").textContent = clientes.length;
+    document.getElementById("vacio").hidden = clientes.length > 0;
+  }
+
+  onAuthStateChanged(auth, user => {
+    if (detenerEscucha) {
+      detenerEscucha();
+      detenerEscucha = null;
+    }
+    clientes = [];
     mostrar();
-  </script>
+
+    if (!user) {
+      acceso.hidden = false;
+      sistema.hidden = true;
+      document.getElementById("usuarioActual").textContent = "";
+      return;
+    }
+
+    acceso.hidden = true;
+    sistema.hidden = false;
+    document.getElementById("usuarioActual").textContent = user.email || "Usuario autorizado";
+
+    const q = query(collection(db, "clientes"), orderBy("nombre"));
+    detenerEscucha = onSnapshot(q, snapshot => {
+      clientes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      mostrar();
+    }, error => {
+      mensajeRegistro.textContent = "No se pudieron cargar los clientes. Revisa las reglas de Firestore.";
+      console.error(error);
+    });
+  });
+
+  document.getElementById("formAcceso").addEventListener("submit", async e => {
+    e.preventDefault();
+    mensajeAcceso.textContent = "Ingresando...";
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        document.getElementById("emailLogin").value.trim(),
+        document.getElementById("passwordLogin").value
+      );
+      mensajeAcceso.textContent = "";
+    } catch (error) {
+      mensajeAcceso.textContent = "No se pudo iniciar sesión. Comprueba el correo, la contraseña y que el usuario exista en Firebase Authentication.";
+      console.error(error);
+    }
+  });
+
+  document.getElementById("salir").addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  formulario.addEventListener("submit", async e => {
+    e.preventDefault();
+    mensajeRegistro.textContent = "Guardando cliente...";
+    const identificacion = document.getElementById("identificacion").value.trim();
+
+    if (clientes.some(c => c.identificacion === identificacion)) {
+      mensajeRegistro.textContent = "Esa identificación ficticia ya existe.";
+      return;
+    }
+
+    const cliente = {
+      nombre: document.getElementById("nombre").value.trim(),
+      apellido: document.getElementById("apellido").value.trim(),
+      identificacion,
+      correo: document.getElementById("correo").value.trim(),
+      tipo: document.getElementById("tipo").value,
+      saldo: Number(document.getElementById("saldo").value),
+      creado: new Date().toISOString()
+    };
+
+    try {
+      await addDoc(collection(db, "clientes"), cliente);
+      formulario.reset();
+      document.getElementById("saldo").value = "0";
+      mensajeRegistro.textContent = "Cliente ficticio registrado correctamente.";
+    } catch (error) {
+      mensajeRegistro.textContent = "No se pudo guardar. Revisa las reglas y el estado de Firebase.";
+      console.error(error);
+    }
+  });
+</script>
 </body>
 </html>
-
